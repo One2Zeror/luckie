@@ -50,6 +50,10 @@
 	  "let f = func (x) func (y z) *(x, +(+(1, y),z)) { ((f 10) 2 3) }"
 	  "let makemult = func (maker) func (x) if zero? (-(x,1)) { 1 } else { *(((maker maker) -(x,1)), x) } 
         { let t = (makemult makemult)  { (t 3) } }"  ;recursive
+	  "letrec f(x) = if zero?(x) { 0 } else { +((f -(x,1)), x) }
+		{ (f 6) }"
+	  "letrec f(x) = if zero?(x) { 0 } else { if zero?(-(x,1)) { 1 } else { +((f -(x,1)), (f -(x,2))) }}
+		{ (f 6) }"
       ))
   
   (define tests

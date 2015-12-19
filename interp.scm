@@ -80,8 +80,8 @@
         ;                     (value-of body new_env))))
         (let-exp (ids exps body)
                  (let [(exps_val (val-list exps env))]
-                   (let [(new_env (extend-envs ids exps_val env))]
-                     (value-of body new_env))))
+                     (value-of body (extend-envs ids exps_val env)))))
+					 
         (cond-exp (conds acts)
                   (val-conds conds acts env))
         

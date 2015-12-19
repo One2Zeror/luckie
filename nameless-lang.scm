@@ -22,7 +22,7 @@
     '((program (expression) a-program)
       
       (expression (number) number-exp)
-      (expression (identifier) var-exp)
+;      (expression (identifier) var-exp)
       
       (expression
        ("+" "(" expression "," expression ")")
@@ -57,9 +57,9 @@
        ("if" expression "{" expression "}" "else" "{" expression "}")
        if-exp)
       
-      (expression
-       ("let" (arbno identifier "=" expression) "{" expression "}")
-       let-exp)
+;      (expression
+;       ("let" (arbno identifier "=" expression) "{" expression "}")
+;       let-exp)
       
       (expression
        ("cond" "[" (arbno "(" expression "," expression ")") "]")
@@ -73,15 +73,14 @@
       (expression ("emptylist") emptylist-exp)
       (expression ("null?" "(" expression ")") null?-exp)
       (expression ("'" "(" (arbno expression) ")" ) list-exp)
-	  (expression ("list" "(" (arbno expression) ")" ) list-exp)
       
       (expression ("[" (arbno identifier) "]" "=" expression) pack-exp)
 
       (expression ("{" (arbno expression) "}" ) block-exp)
       
-      (expression
-       ("func" "(" (arbno identifier) ")" expression)
-       func-exp)
+;      (expression
+;       ("func" "(" (arbno identifier) ")" expression)
+;       func-exp)
       
       (expression
        ("(" expression (arbno expression) ")")
@@ -94,11 +93,11 @@
       (expression ("%nameless-var" number) nameless-var-exp)
 	  
       (expression
-        ("%let" (arbno expression) "%" expression)
+        ("%let" expression "in" expression)
         nameless-let-exp)
 		
       (expression
-        ("%func" expression)
+        ("%lexproc" expression)
         nameless-func-exp)	  
 	  
       ))
