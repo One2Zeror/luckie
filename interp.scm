@@ -2,6 +2,7 @@
   
   (require "lang.scm")
   (require "env.scm")
+  (require "store.scm")
   
   (provide test-interp interp value-of)
   
@@ -11,6 +12,7 @@
   
   (define test-interp 
     (lambda (pgm test_env)
+      (initialize-store!)  ; for explicit refs.
       (cases program pgm
         (a-program (exp0)
                    (value-of exp0 (test_env))))))
@@ -19,6 +21,7 @@
   
   (define interp 
     (lambda (pgm)
+      (initialize-store!)  ; for explicit refs.
       (cases program pgm
         (a-program (exp0)
                    (value-of exp0 (init-env))))))
@@ -74,14 +77,15 @@
                         (value-of true_exp env)
                         (value-of false_exp env)
                         ))))
+        
         ;        (let-exp (id expr body)
         ;                 (let [(val (value-of expr env))]
         ;                   (let [(new_env (extend-env id val env))]
         ;                     (value-of body new_env))))
         (let-exp (ids exps body)
                  (let [(exps_val (val-list exps env))]
-                     (value-of body (extend-envs ids exps_val env)))))
-					 
+                   (value-of body (extend-envs ids exps_val env))))
+        
         (cond-exp (conds acts)
                   (val-conds conds acts env))
         
@@ -113,9 +117,6 @@
         ; (let [(func (apply-func func_name env)) (args-val (val-list args env))]
         ; (val-func func args-val env)))
         
-        ;(func-exp (var body)
-        ;(procedure var body env))
-        
         (func-exp (var body)
                   (cons body (cons var env)))
         ;(list var body env))
@@ -123,81 +124,108 @@
         (call-exp (_func args)
                   (if (equal? _func (car env)) ;recfunc
                       (let [(vals (val-list args env))]
-                      (val-recfunc vals env))
+                        (val-recfunc vals env))
                       (let [(func (value-of _func env)) (vals (val-list args env))]
                         (val-func func vals))))
         
         (letrec-exp (func_name var body letbody)
                     (value-of letbody (cons func_name (cons body (cons var env)))))
         
+        ; (begin-exp (expr exps)
+        ; (letrec 
+        ; ((value-of-begins
+        ; (lambda (e1 es)
+        ; (let ((v1 (value-of e1 env)))
+        ; (if (null? es)
+        ; v1
+        ; (value-of-begins (car es) (cdr es)))))))
+        ; (value-of-begins expr exps)))
+        
+        (newref-exp (expr)
+                    (let ((v1 (value-of expr env)))
+                      (newref v1))) ; return position in store
+        
+        (deref-exp (expr)
+                   (let ((value (value-of expr env)))
+                     (let ((ref (val-num value)))
+                       (deref ref))))
+        
+        (setref-exp (ref expr)
+                    (let ((ref (val-num (value-of ref env))))
+                      (let ((value (value-of expr env)))
+                        (setref! ref value))))
+        
+        (else
+         (eopl:error 'value-of 
+                     "Illegal expression in translated code: ~s" exp0))      
         )))
-  
-  ;  (define procedure
-  ;    (lambda (var body env)
-  ;      (lambda (val)
-  ;        (value-of body (extend-env var val env)))))
-  ;  
-  ;  (define-datatype closure closure?
-  ;    (closure-val 
-  ;     (var symbol?)
-  ;     (body expression?)
-  ;     (env env?)
-  ;     ))
-  
-  (define val-num
-    (lambda (val)
-      (if (number? val)
-          val
-          (expval-extractor-error 'num val))))
-  
-  (define val-boolean
-    (lambda (val)
-      (if (boolean? val)
-          val
-          (not (zero? val)))))
-  
-  (define val-conds
-    (lambda (conds acts env)
-      (and (not (null? conds))
-           (if (val-boolean (value-of (car conds) env))
-               (value-of (car acts) env)
-               (val-conds (cdr conds) (cdr acts) env))
-           )))
-  
-  (define val-list
-    (lambda (exps env)
-      (if (null? exps)
-          '()
-          (cons (value-of (car exps) env) (val-list (cdr exps) env)))))
-  
-  (define val-pack
-    (lambda (ids vals)
-      (if (not (equal? (length ids) (length vals)))
-          (eopl:error "pack: id and value not match")
-          (val-pack-r ids vals))))
-  
-  (define val-pack-r
-    (lambda (ids vals)
-      (if (null? ids)
-          '()
-          '())))
-  
-  ; (define val-func
-  ; (lambda (func args env)
-  ; (value-of (cdr func) (extend-envs (car func) args env))))
-  
-  (define val-func
-    (lambda (func vals)
-      (let [(body (car func)) (vars (cadr func)) (env (cddr func))]
-        (value-of body (extend-envs vars vals env)))))	
-  
-  (define val-recfunc
-    (lambda (vals env)
-      (let [(func_name (car env)) (body (cadr env)) (vars (caddr env)) (_env (cdddr env))]
-        (value-of body (cons func_name (cons body (cons vars (extend-envs vars vals _env))))))))	 
-  
-  (define expval-extractor-error
-    (lambda (variant value)
-      (eopl:error 'expval-extractors "Looking for a ~s, found ~s"
-                  variant value)))
-  )
+    
+    ;  (define procedure
+    ;    (lambda (var body env)
+    ;      (lambda (val)
+    ;        (value-of body (extend-env var val env)))))
+    ;  
+    ;  (define-datatype closure closure?
+    ;    (closure-val 
+    ;     (var symbol?)
+    ;     (body expression?)
+    ;     (env env?)
+    ;     ))
+    
+    (define val-num
+      (lambda (val)
+        (if (number? val)
+            val
+            (expval-extractor-error 'num val))))
+    
+    (define val-boolean
+      (lambda (val)
+        (if (boolean? val)
+            val
+            (not (zero? val)))))
+    
+    (define val-conds
+      (lambda (conds acts env)
+        (and (not (null? conds))
+             (if (val-boolean (value-of (car conds) env))
+                 (value-of (car acts) env)
+                 (val-conds (cdr conds) (cdr acts) env))
+             )))
+    
+    (define val-list
+      (lambda (exps env)
+        (if (null? exps)
+            '()
+            (cons (value-of (car exps) env) (val-list (cdr exps) env)))))
+    
+    (define val-pack
+      (lambda (ids vals)
+        (if (not (equal? (length ids) (length vals)))
+            (eopl:error "pack: id and value not match")
+            (val-pack-r ids vals))))
+    
+    (define val-pack-r
+      (lambda (ids vals)
+        (if (null? ids)
+            '()
+            '())))
+    
+    ; (define val-func
+    ; (lambda (func args env)
+    ; (value-of (cdr func) (extend-envs (car func) args env))))
+    
+    (define val-func
+      (lambda (func vals)
+        (let [(body (car func)) (vars (cadr func)) (env (cddr func))]
+          (value-of body (extend-envs vars vals env)))))	
+    
+    (define val-recfunc
+      (lambda (vals env)
+        (let [(func_name (car env)) (body (cadr env)) (vars (caddr env)) (_env (cdddr env))]
+          (value-of body (cons func_name (cons body (cons vars (extend-envs vars vals _env))))))))	 
+    
+    (define expval-extractor-error
+      (lambda (variant value)
+        (eopl:error 'expval-extractors "Looking for a ~s, found ~s"
+                    variant value)))
+    )

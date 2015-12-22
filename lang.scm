@@ -100,6 +100,25 @@
       (expression
         ("%func" expression)
         nameless-func-exp)	  
+
+	  ;;;state
+      ;;; new for explicit-refs
+
+      ; (expression
+        ; ("begin" expression (arbno ";" expression) "end")
+        ; begin-exp)
+
+      (expression
+        ("new" "(" expression ")")
+        newref-exp)
+
+      (expression
+        ("@" expression )
+        deref-exp)
+
+      (expression
+        ("set" "(" expression "," expression ")")
+        setref-exp)		
 	  
       ))
   

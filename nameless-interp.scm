@@ -123,7 +123,7 @@
         
         (else
          (eopl:error 'value-of 
-                     "Illegal expression in translated code: ~s" exp))
+                     "Illegal expression in translated code: ~s" exp0))
         
         )))
   

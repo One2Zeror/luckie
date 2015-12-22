@@ -54,6 +54,12 @@
 		{ (f 6) }"
 	  "letrec f(x) = if zero?(x) { 0 } else { if zero?(-(x,1)) { 1 } else { +((f -(x,1)), (f -(x,2))) }}
 		{ (f 6) }"
+		
+	  ;;;state
+	  " let x = new(22)
+		{ let f = func(z)  let zz = new(-(z,@x)) 
+		{ @zz } 
+		{ -((f 66), (f 55)) } }"
       ))
   
   (define tests
