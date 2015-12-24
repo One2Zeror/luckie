@@ -60,6 +60,7 @@
 		{ let f = func(z)  let zz = new(-(z,@x)) 
 		{ @zz } 
 		{ -((f 66), (f 55)) } }"
+	  "let t = 16 a = new(7) {- (t, @a)}"	
       ))
   
   (define tests
