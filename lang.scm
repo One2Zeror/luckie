@@ -54,13 +54,9 @@
        lt?-exp)
       
       (expression
-       ("if" expression "{" expression "}" "else" "{" expression "}")
+       ("if" expression expression "else" expression)
        if-exp)
-      
-      (expression
-       ("let" (arbno identifier "=" expression) "{" expression "}")
-       let-exp)
-      
+
       (expression
        ("cond" "[" (arbno "(" expression "," expression ")") "]")
        cond-exp)
@@ -73,12 +69,16 @@
       (expression ("emptylist") emptylist-exp)
       (expression ("null?" "(" expression ")") null?-exp)
       (expression ("'" "(" (arbno expression) ")" ) list-exp)
-	  (expression ("list" "(" (arbno expression) ")" ) list-exp)
+      (expression ("list" "(" (arbno expression) ")" ) list-exp)
       
       (expression ("[" (arbno identifier) "]" "=" expression) pack-exp)
-
-      (expression ("{" (arbno expression) "}" ) block-exp)
       
+      (expression ("{" (arbno expression) "}" ) block-exp)
+          
+      (expression
+       ("let" (arbno identifier "=" expression) "in"  expression)
+       let-exp)
+        
       (expression
        ("func" "(" (arbno identifier) ")" expression)
        func-exp)
@@ -86,40 +86,44 @@
       (expression
        ("(" expression (arbno expression) ")")
        call-exp)
-
-       (expression
-       ("letrec" expression "(" (arbno identifier) ")" "=" expression expression)
+      
+      (expression
+       ("letrec" expression "(" (arbno identifier) ")" "=" expression "in" expression)
        letrec-exp)   
       
       (expression ("%nameless-var" number) nameless-var-exp)
-	  
+      
       (expression
-        ("%let" (arbno expression) "%" expression)
-        nameless-let-exp)
-		
+       ("%let" (arbno expression) "%" expression)
+       nameless-let-exp)
+      
       (expression
-        ("%func" expression)
-        nameless-func-exp)	  
-
-	  ;;;state
+       ("%func" expression)
+       nameless-func-exp)	  
+      
+      ;;;state
       ;;; new for explicit-refs
-
+      
       ; (expression
-        ; ("begin" expression (arbno ";" expression) "end")
-        ; begin-exp)
-
+      ; ("begin" expression (arbno ";" expression) "end")
+      ; begin-exp)
+      
       (expression
-        ("new" "(" expression ")")
-        newref-exp)
-
+       ("new" "(" expression ")")
+       newref-exp)
+      
       (expression
-        ("@" expression )
-        deref-exp)
-
+       ("@" expression )
+       deref-exp)
+      
       (expression
-        ("set" "(" expression "," expression ")")
-        setref-exp)		
-	  
+       ("set!" "(" expression "," expression ")")
+       setref-exp)		
+      
+      (expression
+       ("assign" identifier "=" expression)
+       assign-exp)   
+      
       ))
   
   ;;;;;;;;;;;;;;;; sllgen boilerplate ;;;;;;;;;;;;;;;;

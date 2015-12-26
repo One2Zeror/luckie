@@ -45,7 +45,7 @@
   (define apply-env
     (lambda (sym env)
       (if (null? env)
-          (eopl:error 'apply-env "No binding for ~s" sym)
+          (begin (eopl:printf "No binding for ~s~%" sym) '())
           (if (pair? (car env))  
               (apply-sym-env sym env)
               (let [(sym_env (cdddr env))] ;recfun env

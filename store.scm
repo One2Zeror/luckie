@@ -139,15 +139,17 @@
   
   (define vector-grow
     (lambda(store) 
-      (let* ((len (vector-length store))
-             (new-store (make-vector (* len 2))))
+      (let* [(len (vector-length store))
+             (new-store (make-vector (* len 2)))]
         (vector-copy! new-store 0 store 0 len)
+        (eopl:printf "vector-grow: from ~s to ~s~%"
+                       len (* len 2))
         new-store)))
   
   (define newref
     (lambda (val)
       (let [(len (vector-length the-store))]
-        (unless (= vector_pos len)
+        (when (= vector_pos len)
           (set! the-store (vector-grow the-store)))
         (vector-set! the-store vector_pos val)
         (unless (instrument-newref)
