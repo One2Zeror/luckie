@@ -163,7 +163,30 @@
                     (let [(ref (apply-env var env)) (val (value-of expr env))]
                       (if (null? ref) 
                           (extend-env var (newref val) env) ;;;creat it in env if it's a new var
-                          (setref! ref val)))) 
+                          (setref! ref val))))
+        
+        (pair-exp (left right)
+                  (let [(lval (value-of left env)) (rval (value-of right env))]
+                    (let [(lref (newref lval)) (rref (newref rval))]
+                      lref)))
+        
+        (left-exp (expr)
+                  (let [(ref (value-of expr env))]
+                    (deref ref)))
+        
+        (right-exp (expr)
+                   (let [(ref (value-of expr env))]
+                     (deref (+ ref 1))))
+        
+        (setleft-exp (ref expr)
+                     (let ((ref (val-num (value-of ref env))))
+                       (let ((value (value-of expr env)))
+                         (setref! ref value))))
+        
+        (setright-exp (ref expr)
+                      (let ((ref (val-num (value-of ref env))))
+                        (let ((value (value-of expr env)))
+                          (setref! (+ ref 1) value))))
         
         (else
          (eopl:error 'value-of 
@@ -217,7 +240,7 @@
       (if (null? ids)
           '()
           '())))
-
+  
   (define val-block
     (lambda (exps env)
       (map (lambda (exp) (value-of exp env)) exps)))

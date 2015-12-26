@@ -123,7 +123,18 @@
       (expression
        ("assign" identifier "=" expression)
        assign-exp)   
-      
+
+      (expression
+       ("pair" "(" expression "," expression ")")
+       pair-exp)      
+      (expression ("left" "(" expression ")") left-exp)
+      (expression ("right" "(" expression ")") right-exp)	   	  
+      (expression
+       ("setl" "(" expression "," expression ")")
+       setleft-exp)		 
+      (expression
+       ("setr" "(" expression "," expression ")")
+       setright-exp)		   
       ))
   
   ;;;;;;;;;;;;;;;; sllgen boilerplate ;;;;;;;;;;;;;;;;

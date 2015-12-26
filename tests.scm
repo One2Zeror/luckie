@@ -74,6 +74,9 @@
 		assign times4 = func (x) 
 		if zero?(x) { 0 } else { -((times4 -(x,1)), -4) }
 		(times4 3)}"
+		
+		"let p = pair(-(12,10),1210) in left(p)"
+		"let p = pair(-(12,10),1210) in right(p)"
       ))
   
   (define tests
