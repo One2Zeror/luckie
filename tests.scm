@@ -90,6 +90,17 @@
 	    ((swap a) b)
 	    -(a,b)
 	    }"
+		
+		"let makerec = func (f)
+		let d = func (x) (f (x x))
+		in (f (d d))
+		in let maketimes4 = func (f)
+		func (x)
+		if zero?(x)
+		 0
+		else -((f -(x,1)), -4)
+		in let times4 = (makerec maketimes4)
+		in (times4 3)" ;;;call-by-name		
       ))
   
   (define tests
