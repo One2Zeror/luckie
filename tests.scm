@@ -61,22 +61,35 @@
 		in @zz 
 		in -((f 66), (f 55))"
 	  "let t = 16 a = new(7) in - (t, @a)"	
-	  "{ assign t = 16  a = new(7) - (t, @a) }"	
+	  "{ set t = 16  a = new(7) - (t, @a) }"	
 	  
 	  "let f = func (x) func (y)
 		{
-		  assign x = -(x,-1)
+		  set x = -(x,-1)
 		  -(x,y)
 		}
 		in ((f 44) 33)"
 		
-		"let times4 = 0 in {
-		assign times4 = func (x) 
-		if zero?(x) { 0 } else { -((times4 -(x,1)), -4) }
-		(times4 3)}"
-		
-		"let p = pair(-(12,10),1210) in left(p)"
-		"let p = pair(-(12,10),1210) in right(p)"
+	  "let times4 = 0 in {
+	  set times4 = func (x) 
+	  if zero?(x) { 0 } else { -((times4 -(x,1)), -4) }
+	  (times4 3)}"
+	  
+	  "let p = pair(-(12,10),1210) in left(p)"
+	  "let p = pair(-(12,10),1210) in right(p)"
+	  
+	  "let swap = func (x) func (y)
+	    let temp = x
+	    in {
+	    set x = y
+	    set y = temp
+	    }
+	    in let a = 33
+	    in let b = 44
+	    in {
+	    ((swap a) b)
+	    -(a,b)
+	    }"
       ))
   
   (define tests

@@ -121,7 +121,7 @@
        setref-exp)		
       
       (expression
-       ("assign" identifier "=" expression)
+       ("set" identifier "=" expression)
        assign-exp)   
 
       (expression

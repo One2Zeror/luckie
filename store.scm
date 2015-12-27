@@ -166,7 +166,9 @@
   
   (define setref!
     (lambda (ref val)
-      (vector-set! the-store ref val)))
+      (vector-set! the-store ref val)
+	  (eopl:printf "setref: location ~s set with contents ~s~%"
+                       ref val)))
   
   (define get-store-as-list
     (lambda()
